@@ -101,14 +101,14 @@ function converterTemperatura(valor, de, para) {
  * @throw ConvertError Se o parâmetro não for um número inteiro ou for menor que zero.
  */
 function fatorial(n) {
-    if (!Number.isFinite(n) || n < 0){
+    if (!Number.isInteger(n) || n < 0){
         throw new ConvertError  ("O valor deve ser um número inteiro positivo");
     }
-    if (n == 0 || n == 1n) {
-        return 1;
+    if (n == 0 || n == 1) {
+        return 1n;
       } 
       else {
-        return n * fatorial(n - 1);
+        return BigInt(n) * fatorial(n - 1);
       }
       
 }
@@ -159,10 +159,10 @@ function fibonacci(n) {
  * @throw ConvertError Se o parâmetro não for um número inteiro ou for menor que zero.
  */
 function triangular(n) {
-    if (!Number.isInteger(n) || n < 0) {
+    if (!|| n < 0 ) {
         throw new ConvertError("O valor tem que ser um número inteiro não negativo");
     }
-    return BigInt((n * (n + 1)) / 2);
+    return (n * (n + 1n)) / 2n;
 }
 
 // EXERCÍCIO 7.
