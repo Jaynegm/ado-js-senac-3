@@ -159,7 +159,7 @@ function fibonacci(n) {
  * @throw ConvertError Se o parâmetro não for um número inteiro ou for menor que zero.
  */
 function triangular(n) {
-    if (!|| n < 0 ) {
+    if (typeof n !== "bigint" || n < 0 ) {
         throw new ConvertError("O valor tem que ser um número inteiro não negativo");
     }
     return (n * (n + 1n)) / 2n;
@@ -183,7 +183,7 @@ function cepRegex() {
  * @return {RegExp} Uma expressão regular.
  */
 function dddRegex() {
-    return /^(1[1-9]|[2-9]\d)(?!.*\1$)$/g;
+    return /^(?:[14689][1-9]|2[12478]|3[1234578]|5[1345]|7[134579])$/g;
 }
 
 // EXERCÍCIO 9.
@@ -205,9 +205,9 @@ async function pesquisarCep(cep) {
     if (!response.ok){
         throw new ConvertError('Cep não encontrado');
     }
-    const data = awaitresponse.json();
+    const data = await response.json();
     if (data.erro){
-        throw new PesquisarCepError('CEP não encontrado');
+        throw new PesquisaCepError('CEP não encontrado');
     }
     const logradouro = typeof data.logradouro == "string" ? data.logradouro : "";
     const bairro = typeof data.bairro == "string" ? data.bairro : "";
@@ -229,9 +229,8 @@ async function pesquisarCepDOM() {
     const cepInput = document.getElementById('cep');
     const resultadoInput = document.getElementById('resultado-cep');
     try {
-        const endereco =await pesquisarCep(cepInput.value);
-        const enderecoStr = `${endereco.logradouro} - ${endereco.bairro} - ${endereco.localidade} - ${endereco.uf}`;
-            resultadoInput,value = enderecoStr;
+        const endereco = await pesquisarCep(cepInput.value);
+        resultadoInput.value = "" + endereco;
     }
     catch(error){
         resultadoInput.value = error.message;
@@ -247,9 +246,7 @@ async function pesquisarCepDOM() {
  * @throws PokemonNaoEncontradoError Se não existir pokémon com o nome ou número dado.
  */
 async function pesquisarPokemon(chave) {
-    const url = isNaN(chave)
-    ? `https://pokeapi.co/api/v2/pokemon/${chave}`
-    : `https://pokeapi.co/api/v2/pokemon/${chave}/`;
+    const url = `https://pokeapi.co/api/v2/pokemon/${chave}`;
     try {
         const response = await fetch(url);
         if (!response.ok){
@@ -263,11 +260,7 @@ async function pesquisarPokemon(chave) {
         if (!name || !number || !imageUrl){
             throw new PokemonNaoEncontradoError('Informações não encontradas');
         }
-        return {
-            name: name,
-            number: number,
-            imageUrl:imageUrl
-        }
+        return new Pokemon(name,number,imageUrl);
     } 
     catch (error){
         if (error instanceof PokemonNaoEncontradoError){
@@ -294,9 +287,9 @@ async function pesquisarPokemonDOM() {
     const fotoImg = document.getElementById('pokemon-foto');
     try {
         const pokemonData = await pesquisarPokemon(chave);
-        nomeInput.value = pokemonData.name;
-        numeroInput.value = pokemonData.number;
-        fotoImg.src = pokemonData.imageUrl;
+        nomeInput.value = pokemonData.nome;
+        numeroInput.value = pokemonData.numero;
+        fotoImg.src = pokemonData.foto;
     }
     catch (error){
         nomeInput.value = error.message;
